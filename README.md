@@ -1,63 +1,21 @@
-# iOStephano
+# Hola, soy Stephano.
 
-**iOStephano** es una experiencia web interactiva inspirada en un escritorio macOS.
+Desde hace varios años dedico gran parte de mi tiempo a construir aplicaciones dentro del ecosistema Apple, explorar nuevos frameworks y entender cómo la tecnología puede convertirse en productos digitales útiles, escalables y bien diseñados.
 
-El proyecto funciona como un espacio digital donde se presentan ideas, contenido, proyectos y recursos relacionados con el ecosistema Apple, Swift, desarrollo iOS y comunidad tecnológica en Latinoamérica.
+Lo que más me atrae del desarrollo de software es la posibilidad de crear a través del código un producto que pueda evolucionar, resolver un problema real y crecer más allá de una primera idea. Me interesa ese recorrido que existe entre imaginar algo, convertirlo en una aplicación funcional y seguir mejorándolo con criterio técnico, diseño, arquitectura y visión de producto. Esa forma de entender el software también explica mi interés por las startups, la innovación y los equipos que buscan transformar ideas en productos reales.
 
-## Concepto
+Con el deseo de profundizar en este camino, tuve la oportunidad de viajar a Italia y formar parte de la Apple Developer Academy en Nápoles, una experiencia que marcó profundamente mi forma de entender la tecnología. Más allá del desarrollo de software, descubrí el valor de trabajar junto a personas con diferentes perspectivas, compartir ideas, colaborar en equipos multidisciplinarios y aprender a observar los problemas desde distintos puntos de vista.
 
-Este sitio no está planteado como una landing page tradicional.
+Italia terminó convirtiéndose en mi hogar durante casi una década. Durante esos años trabajé en distintos proyectos dentro del sector FinTech, participando en la construcción de aplicaciones utilizadas por millones de usuarios y enfrentando desafíos relacionados con arquitectura, seguridad, experiencia de usuario y evolución de productos digitales a gran escala. Esa etapa me permitió crecer como desarrollador, pero también entender la importancia de construir software sostenible, bien pensado y preparado para evolucionar con el tiempo.
 
-La experiencia simula entrar al escritorio de iOStephano: un entorno visual con wallpaper, Dock flotante, archivos, widgets y ventanas internas que permiten explorar diferentes partes del ecosistema.
+También me atrae mucho el mundo de la creatividad digital, especialmente las aplicaciones que combinan herramientas visuales, personalización, rendimiento y una experiencia de usuario muy cuidada. Me interesa cómo este tipo de productos logran unir diseño gráfico, interacción, fluidez, precisión y tecnología para convertir una pantalla en un espacio de creación. Esa relación entre código, diseño, color, forma y experiencia visual es una parte importante de lo que me inspira al construir productos digitales.
 
-La intención es construir una interfaz narrativa, donde cada elemento del escritorio represente un proyecto, una idea o una línea de contenido.
+Después de varios años viviendo en Europa decidí regresar al Perú con la intención de aportar todo lo aprendido, conectar con el ecosistema tecnológico de Latinoamérica y seguir construyendo desde una nueva perspectiva. Este regreso representa una oportunidad para participar más activamente en el crecimiento de los productos digitales, las startups y el mundo FinTech de nuestra región.
 
-## Ecosistema
+iOStephano nace como una forma de documentar este recorrido. Es un espacio donde comparto ideas, aprendizajes, exploraciones técnicas, novedades del ecosistema Apple y reflexiones sobre desarrollo de software, inteligencia artificial, arquitectura y creación de productos digitales.
 
-El proyecto reúne distintas capas del universo iOStephano:
+También estoy desarrollando SwiftLATAM, una iniciativa pensada para conectar y fortalecer a la comunidad de desarrolladores Apple en Latinoamérica, y 8+ Core, un laboratorio enfocado en la creación de productos digitales y software para plataformas Apple.
 
-* contenido sobre Swift y desarrollo Apple;
-* proyectos educativos y comunitarios;
-* libros y recursos de aprendizaje;
-* enlaces sociales y profesionales;
-* espacios visuales para presentar iniciativas en evolución.
+Gracias por pasar por aquí.
 
-## Tecnologías
-
-El sitio está construido con tecnologías web estándar:
-
-* HTML;
-* CSS;
-* JavaScript vanilla;
-* assets locales.
-
-No utiliza frameworks, backend, base de datos ni proceso de build.
-
-Es un proyecto estático preparado para publicarse en GitHub Pages.
-
-## Características principales
-
-* Interfaz inspirada en un escritorio.
-* Dock flotante con navegación visual.
-* Ventanas internas.
-* Carruseles visuales.
-* Archivos interactivos sobre el escritorio.
-* Widget superior con contenido rotativo.
-* Diseño responsive para diferentes tamaños de pantalla.
-* Assets reemplazables para actualizar el contenido visual.
-
-## Estado del proyecto
-
-Esta es una primera versión pública del desktop portfolio de iOStephano.
-
-El proyecto seguirá evolucionando con nuevas secciones, contenido, recursos y mejoras visuales.
-
-## Notas legales
-
-Este sitio no incluye assets oficiales de Apple.
-
-La estética está inspirada en interfaces modernas tipo Apple, pero no pretende ser una reproducción oficial de macOS, iOS ni de ningún producto de Apple.
-
-Apple, macOS, iOS, Safari, Finder y otros nombres relacionados son marcas registradas de Apple Inc.
-
-Todas las imágenes, íconos, logos y recursos visuales añadidos al proyecto deben usarse únicamente si se cuenta con los derechos correspondientes.
+Espero que encuentres algo interesante, útil o inspirador en este recorrido.
