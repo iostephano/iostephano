@@ -1,0 +1,1603 @@
+/* ─── Reset ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Variables ─────────────────────────────────────────────────────────── */
+:root {
+  --bg-fallback:      #0B0D12;
+  --text:             rgba(255, 255, 255, 0.92);
+  --text-secondary:   rgba(255, 255, 255, 0.68);
+  --glass-bg:         rgba(255, 255, 255, 0.10);
+  --glass-border:     rgba(255, 255, 255, 0.26);
+  --glass-highlight:  rgba(255, 255, 255, 0.52);
+  --shadow:           rgba(0, 0, 0, 0.28);
+  --window-bg:        rgba(18, 20, 26, 0.55);
+
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter", "Segoe UI", sans-serif;
+
+  --r-dock:    26px;
+  --r-icon:    14px;
+  --r-window:  22px;
+
+  --icon-size: 54px;
+  --icon-img:  46px;
+  --dock-gap:  10px;
+  --dock-ph:   14px;
+  --dock-pv:   9px;
+
+  --ease-spring: cubic-bezier(.2,.8,.2,1);
+  --ease-snap:   cubic-bezier(.6,.0,.8,.4);
+
+  --z-overlay: 1;
+  --z-dock:    100;
+  --z-windows: 200;
+
+  /* ── Window safe-area system ──────────────────────────────────────────────
+     --dock-reserved : vertical space from bottom that windows must never enter
+                       (dock bottom-offset ~36px + dock height ~74px + gap 28px ≈ 138px)
+     --win-clearance : minimum breathing room at the top of the viewport
+     --win-max-h     : maximum height a window may grow to
+     Windows are then centered within the available area [clearance … dock-reserved]
+     so they are always visible and never obscure the Dock.                   */
+  --dock-reserved: 148px;
+  --win-clearance:  20px;
+  --win-max-h:     calc(100vh - var(--dock-reserved) - var(--win-clearance));
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────── */
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+  color: var(--text);
+}
+
+/* ─── Desktop ───────────────────────────────────────────────────────────── */
+.desktop {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background-color: var(--bg-fallback);
+  /* Wallpaper with gradient fallback: if PNG is missing, the gradient shows */
+  background-image:
+    url('assets/wallpapers/wallpaper-current.png'),
+    linear-gradient(135deg,
+      #c8a882 0%,
+      #d4bc9a 15%,
+      #e4d8c4 32%,
+      #d0c8d6 52%,
+      #9c9ab4 72%,
+      #808aaa 100%
+    );
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+}
+
+/* ─── Overlay ───────────────────────────────────────────────────────────── */
+.desktop-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-overlay);
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.06) 0%,
+    transparent 30%,
+    transparent 65%,
+    rgba(0, 0, 0, 0.12) 100%
+  );
+}
+
+/* ─── Dock ──────────────────────────────────────────────────────────────── */
+.dock {
+  position: fixed;
+  left: 50%;
+  bottom: clamp(20px, 4vh, 42px);
+  transform: translateX(-50%);
+  z-index: var(--z-dock);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.dock-list {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--dock-gap);
+  padding: var(--dock-pv) var(--dock-ph);
+  border-radius: var(--r-dock);
+  list-style: none;
+
+  /* Liquid Glass */
+  background: var(--glass-bg);
+  backdrop-filter: blur(32px) saturate(180%) brightness(1.06);
+  -webkit-backdrop-filter: blur(32px) saturate(180%) brightness(1.06);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 10px 48px rgba(0, 0, 0, 0.22),
+    0 2px 8px rgba(0, 0, 0, 0.14),
+    inset 0 1.5px 0 var(--glass-highlight),
+    inset 0 -0.5px 0 rgba(255, 255, 255, 0.10);
+}
+
+/* Top-glass specular sheen */
+.dock-list::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  border-radius: var(--r-dock) var(--r-dock) 0 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.10) 0%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* ─── Dock Item ─────────────────────────────────────────────────────────── */
+.dock-item {
+  list-style: none;
+  position: relative;
+}
+
+.dock-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-size);
+  height: var(--icon-size);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  border-radius: var(--r-icon);
+  transition: transform 210ms var(--ease-spring);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dock-btn:hover,
+.dock-btn:focus-visible {
+  transform: translateY(-8px) scale(1.08);
+}
+
+.dock-btn:active {
+  transform: translateY(-3px) scale(0.96);
+  transition-duration: 100ms;
+}
+
+.dock-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.65);
+  outline-offset: 3px;
+  border-radius: calc(var(--r-icon) + 3px);
+}
+
+.dock-icon {
+  width: var(--icon-img);
+  height: var(--icon-img);
+  border-radius: calc(var(--r-icon) - 1px);
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  display: block;
+  box-shadow:
+    0 2px 10px rgba(0, 0, 0, 0.28),
+    0 1px 3px rgba(0, 0, 0, 0.16);
+}
+
+/* ─── Tooltip ───────────────────────────────────────────────────────────── */
+.dock-tooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(5px);
+  background: rgba(14, 16, 22, 0.84);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.90);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  padding: 4px 10px 5px;
+  border-radius: 9px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 140ms ease, transform 140ms ease;
+  z-index: 10;
+}
+
+.dock-btn:hover .dock-tooltip,
+.dock-btn:focus-visible .dock-tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ─── Windows Layer ─────────────────────────────────────────────────────── */
+.windows-layer {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-windows);
+  pointer-events: none;
+}
+
+/* ─── Window ────────────────────────────────────────────────────────────── */
+.window {
+  position: absolute;
+  /* Center within the safe area above the Dock.
+     top = clearance + half of the available height, so the window sits in the
+     middle of the space between the top margin and the dock reserved area.   */
+  top: calc(var(--win-clearance) + var(--win-max-h) / 2);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(340px, 480px, calc(100vw - 32px));
+  max-width: calc(100vw - 32px);
+  max-height: var(--win-max-h);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  background: var(--window-bg);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: var(--r-window);
+  box-shadow:
+    0 28px 88px rgba(0, 0, 0, 0.44),
+    0 8px 28px rgba(0, 0, 0, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+
+  pointer-events: all;
+  opacity: 0;
+}
+
+.window--open {
+  animation: windowOpen 230ms var(--ease-spring) forwards;
+}
+
+.window--closing {
+  animation: windowClose 190ms var(--ease-snap) forwards !important;
+}
+
+@keyframes windowOpen {
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 14px)) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes windowClose {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 10px)) scale(0.93);
+  }
+}
+
+/* ─── Window Titlebar ───────────────────────────────────────────────────── */
+.window-titlebar {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+.window-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.window-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+  flex-shrink: 0;
+}
+
+button.window-dot {
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  outline: none;
+  transition: filter 120ms ease;
+}
+
+button.window-dot:hover {
+  filter: brightness(1.2);
+}
+
+button.window-dot:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
+.window-dot--close  { background: rgba(255,  95,  87, 0.88); }
+.window-dot--min    { background: rgba(255, 189,  68, 0.70); }
+.window-dot--max    { background: rgba( 39, 201,  63, 0.70); }
+
+.window-title {
+  flex: 1;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.86);
+  letter-spacing: 0.01em;
+  /* visually center accounting for 3 dots (~54px) on the left */
+  padding-right: 54px;
+}
+
+/* ─── Window Body ───────────────────────────────────────────────────────── */
+.window-body {
+  padding: 22px 22px 26px;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.15) transparent;
+}
+
+.window-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.window-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.window-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 4px;
+}
+
+.window-description {
+  font-size: 14px;
+  line-height: 1.70;
+  color: rgba(255, 255, 255, 0.74);
+  font-weight: 400;
+}
+
+.window-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  padding: 3px 11px 4px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.48);
+}
+
+/* ─── Tablet ────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  :root {
+    --icon-size:     48px;
+    --icon-img:      40px;
+    --dock-gap:      9px;
+    --dock-ph:       12px;
+    /* Tablet dock is ~66px tall; reserved stays conservative */
+    --dock-reserved: 138px;
+    --win-max-h:     calc(100vh - var(--dock-reserved) - var(--win-clearance));
+  }
+
+  .window {
+    width: clamp(320px, 90vw, 480px);
+  }
+}
+
+/* ─── Mobile ────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  :root {
+    --icon-size: 44px;
+    --icon-img:  37px;
+    --dock-gap:  7px;
+    --dock-ph:   10px;
+    --dock-pv:   8px;
+    --r-dock:    22px;
+  }
+
+  .dock {
+    bottom: max(14px, env(safe-area-inset-bottom, 14px));
+    max-width: calc(100vw - 20px);
+  }
+
+  .dock-list {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .dock-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  .dock-tooltip {
+    display: none;
+  }
+
+  /* Mobile window: sheet from bottom */
+  .window {
+    position: absolute;
+    top: auto;
+    bottom: 94px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-width: none;
+    max-height: 68vh;
+    transform: none;
+    animation-name: windowOpenMobile;
+  }
+
+  .window--closing {
+    animation-name: windowCloseMobile !important;
+  }
+}
+
+/* ─── Keyframes (mobile) — defined outside @media for broad compat ──────── */
+@keyframes windowOpenMobile {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes windowCloseMobile {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(14px); }
+}
+
+/* ─── Reduced Motion ────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .dock-btn {
+    transition: none;
+  }
+
+  .window--open,
+  .window--closing {
+    animation: none !important;
+    opacity: 1;
+  }
+
+  .window--closing {
+    opacity: 0 !important;
+  }
+}
+
+/* ─── Finder Window ─────────────────────────────────────────────────────── */
+.window--finder {
+  width: clamp(520px, 900px, calc(100vw - 64px));
+  max-width: calc(100vw - 64px);
+  /* max-height inherited from .window via --win-max-h */
+}
+
+/* Block layout inside so float works */
+.finder-body {
+  display: block;
+  flex: 1;
+  min-height: 0;
+  padding: 32px 36px 36px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.finder-body::-webkit-scrollbar        { width: 4px; }
+.finder-body::-webkit-scrollbar-track  { background: transparent; }
+.finder-body::-webkit-scrollbar-thumb  {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+
+/* Circular profile photo — floated left so text wraps naturally */
+.finder-photo {
+  float: left;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  margin: 2px 30px 18px 0;
+  display: block;
+  flex-shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow:
+    0 6px 32px rgba(0, 0, 0, 0.38),
+    0 0 0 4px rgba(255, 255, 255, 0.05);
+}
+
+/* First paragraph — greeting */
+.finder-greeting {
+  font-size: 17px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.90);
+  letter-spacing: 0.01em;
+  line-height: 1.40;
+  margin-bottom: 14px;
+}
+
+/* Body paragraphs */
+.finder-para {
+  font-size: 13.5px;
+  line-height: 1.76;
+  color: rgba(255, 255, 255, 0.70);
+  font-weight: 400;
+  margin-bottom: 13px;
+}
+
+.finder-para:last-of-type {
+  margin-bottom: 0;
+}
+
+/* Clears the float, places badge below all content */
+.finder-footer {
+  clear: both;
+  padding-top: 22px;
+}
+
+/* ─── Finder · Tablet ───────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .window--finder {
+    width: clamp(460px, 90vw, 860px);
+  }
+
+  .finder-photo {
+    width: 150px;
+    height: 150px;
+    margin-right: 24px;
+  }
+
+  .finder-body {
+    padding: 26px 28px 30px;
+  }
+}
+
+/* ─── Finder · Mobile ───────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  /* On mobile the general .window override already handles position/size.
+     We just adjust internal layout: photo stacks above text. */
+  .window--finder {
+    max-height: 76vh;
+  }
+
+  .finder-photo {
+    float: none;
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 20px;
+    display: block;
+  }
+
+  .finder-body {
+    padding: 20px 18px 24px;
+  }
+
+  .finder-greeting {
+    font-size: 15px;
+    text-align: center;
+  }
+}
+
+/* ─── Apps Window ───────────────────────────────────────────────────────── */
+.window--apps {
+  width: clamp(520px, 900px, calc(100vw - 64px));
+  max-width: calc(100vw - 64px);
+  /* max-height inherited from .window via --win-max-h */
+}
+
+.apps-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.apps-body::-webkit-scrollbar        { width: 4px; }
+.apps-body::-webkit-scrollbar-track  { background: transparent; }
+.apps-body::-webkit-scrollbar-thumb  {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+
+/* Each project row */
+.app-project {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 32px 32px;
+}
+
+/* Subtle rule between projects */
+.app-project-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+  margin: 0 32px;
+}
+
+/* Rounded-square app icon — 160px desktop */
+.app-project-icon {
+  width: 160px;
+  height: 160px;
+  border-radius: 34px;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+  box-shadow:
+    0 6px 28px rgba(0, 0, 0, 0.38),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* Text + button column */
+.app-project-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app-project-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.90);
+  letter-spacing: 0.01em;
+  line-height: 1.25;
+}
+
+.app-project-desc {
+  font-size: 13px;
+  line-height: 1.62;
+  color: rgba(255, 255, 255, 0.60);
+  font-weight: 400;
+}
+
+/* Glass pill button — visible but no action yet */
+.app-project-link {
+  align-self: flex-start;
+  margin-top: 6px;
+  padding: 6px 22px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.80);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  outline: none;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.app-project-link:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
+.app-project-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.50);
+  outline-offset: 2px;
+}
+
+.app-project-link:active {
+  background: rgba(255, 255, 255, 0.07);
+  transform: scale(0.97);
+}
+
+/* ─── Apps · Tablet ─────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .window--apps {
+    width: clamp(460px, 90vw, 860px);
+  }
+
+  .app-project {
+    padding: 28px 24px;
+    gap: 24px;
+  }
+
+  .app-project-divider {
+    margin: 0 24px;
+  }
+}
+
+/* ─── Apps · Mobile ─────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .app-project {
+    padding: 22px 18px;
+    gap: 16px;
+  }
+
+  .app-project-divider {
+    margin: 0 18px;
+  }
+
+  .app-project-icon {
+    width: 120px;
+    height: 120px;
+    border-radius: 26px;
+  }
+
+  .app-project-name {
+    font-size: 15px;
+  }
+
+  .app-project-desc {
+    font-size: 12.5px;
+  }
+}
+
+/* ─── Project Preview Windows (SwiftLATAM · 8+ Core) ────────────────────── */
+/* Width matches .window--apps; scroll behavior matches .window--calendar. */
+.window--swiftlatam,
+.window--8pluscore {
+  width: clamp(520px, 900px, calc(100vw - 64px));
+  max-width: calc(100vw - 64px);
+  /* max-height inherited from .window via --win-max-h */
+}
+
+/* Scrollable body — preview image may exceed available height */
+.project-preview-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 24px 28px 28px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.project-preview-body::-webkit-scrollbar       { width: 4px; }
+.project-preview-body::-webkit-scrollbar-track { background: transparent; }
+.project-preview-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+
+/* Tall vertical preview — fills available width, height auto → natural scroll */
+.project-preview-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  object-fit: contain;
+  user-select: none;
+  box-shadow:
+    0 8px 36px rgba(0, 0, 0, 0.44),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* ─── Project Preview · Tablet ──────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .window--swiftlatam,
+  .window--8pluscore {
+    width: clamp(460px, 90vw, 860px);
+  }
+
+  .project-preview-body {
+    padding: 20px 22px 24px;
+  }
+}
+
+/* ─── Project Preview · Mobile ───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .project-preview-body {
+    padding: 16px 14px 20px;
+    align-items: flex-start;
+  }
+
+  .project-preview-img {
+    border-radius: 10px;
+  }
+}
+
+/* ─── Safari Window ─────────────────────────────────────────────────────── */
+.window--safari {
+  width: clamp(520px, 900px, calc(100vw - 64px));
+  max-width: calc(100vw - 64px);
+  /* max-height inherited from .window via --win-max-h */
+}
+
+/* Internal browser URL bar */
+.safari-urlbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  flex-shrink: 0;
+  background: rgba(0, 0, 0, 0.10);
+}
+
+.safari-url-capsule {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 18px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 100px;
+  max-width: 340px;
+  width: 100%;
+}
+
+.safari-url-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.56);
+  letter-spacing: 0.01em;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+/* Scrollable content area */
+.safari-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.safari-body::-webkit-scrollbar        { width: 4px; }
+.safari-body::-webkit-scrollbar-track  { background: transparent; }
+.safari-body::-webkit-scrollbar-thumb  {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+
+/* Clickable link wrapping the preview */
+.safari-preview-link {
+  display: block;
+  cursor: pointer;
+  outline: none;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.safari-preview-link:hover {
+  opacity: 0.88;
+  transform: scale(1.005);
+}
+
+.safari-preview-link:active {
+  opacity: 0.80;
+  transform: scale(0.998);
+}
+
+.safari-preview-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.55);
+  outline-offset: -2px;
+}
+
+/* Preview image fills the link area */
+.safari-preview-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  user-select: none;
+}
+
+/* ─── Safari · Tablet ───────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .window--safari {
+    width: clamp(460px, 90vw, 860px);
+  }
+}
+
+/* ─── Safari · Mobile ───────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .safari-url-capsule {
+    max-width: 220px;
+  }
+}
+
+/* ─── Books Window ──────────────────────────────────────────────────────── */
+.window--books {
+  width: clamp(520px, 900px, calc(100vw - 64px));
+  max-width: calc(100vw - 64px);
+}
+
+.books-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 36px 40px 40px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.books-body::-webkit-scrollbar       { width: 4px; }
+.books-body::-webkit-scrollbar-track { background: transparent; }
+.books-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+
+/* Carousel wrapper: cover+content on top, nav controls below */
+.books-carousel {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* Horizontal layout: cover left, content right */
+.books-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 44px;
+}
+
+/* Vertical book cover — 2:3 ratio */
+.books-cover {
+  width: 230px;
+  height: 340px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+  box-shadow:
+    -4px 0 0 rgba(0, 0, 0, 0.22),
+    0 10px 40px rgba(0, 0, 0, 0.50),
+    0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* Right column */
+.books-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-top: 4px;
+}
+
+.books-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.93);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  margin-bottom: 14px;
+}
+
+/* Price — sits between title and description */
+.books-price {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin-bottom: 16px;
+}
+
+.books-price-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.books-price-value {
+  font-size: 17px;
+  font-weight: 700;
+  color: rgba(120, 224, 154, 0.92);
+  letter-spacing: 0.01em;
+}
+
+.books-description {
+  font-size: 13.5px;
+  line-height: 1.74;
+  color: rgba(255, 255, 255, 0.60);
+  font-weight: 400;
+  margin-bottom: 24px;
+}
+
+/* Purchase action row */
+.books-actions {
+  display: flex;
+}
+
+.books-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 9px 26px 10px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.80);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  transition: background 140ms ease, border-color 140ms ease, transform 100ms ease;
+}
+
+.books-link-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
+.books-link-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.50);
+  outline-offset: 2px;
+}
+
+.books-link-btn:active {
+  background: rgba(255, 255, 255, 0.07);
+  transform: scale(0.97);
+}
+
+/* Carousel navigation: prev · counter · next */
+.books-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.books-nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 17px;
+  line-height: 1;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  transition: background 140ms ease, border-color 140ms ease, transform 100ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.books-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.30);
+}
+
+.books-nav-btn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.50);
+  outline-offset: 2px;
+}
+
+.books-nav-btn:active {
+  background: rgba(255, 255, 255, 0.06);
+  transform: scale(0.94);
+}
+
+.books-counter {
+  min-width: 48px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.44);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Books · Tablet ────────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .window--books {
+    width: clamp(460px, 90vw, 860px);
+  }
+
+  .books-body {
+    padding: 28px 30px 32px;
+  }
+
+  .books-layout {
+    gap: 32px;
+  }
+
+  .books-cover {
+    width: 190px;
+    height: 280px;
+    border-radius: 10px;
+  }
+
+  .books-title {
+    font-size: 26px;
+  }
+}
+
+/* ─── Books · Mobile ────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .books-body {
+    padding: 22px 18px 26px;
+  }
+
+  .books-layout {
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .books-cover {
+    width: 150px;
+    height: 222px;
+    border-radius: 10px;
+  }
+
+  .books-content {
+    padding-top: 0;
+    width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  .books-title {
+    font-size: 22px;
+  }
+
+  .books-price {
+    justify-content: center;
+  }
+
+  .books-actions {
+    justify-content: center;
+  }
+
+  .books-nav {
+    gap: 22px;
+  }
+}
+
+/* ─── Calendar Window ───────────────────────────────────────────────────── */
+.window--calendar {
+  width: clamp(520px, 900px, calc(100vw - 64px));
+  max-width: calc(100vw - 64px);
+}
+
+/* Scrollable body — image may exceed available height */
+.calendar-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px 24px 24px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.calendar-body::-webkit-scrollbar       { width: 4px; }
+.calendar-body::-webkit-scrollbar-track { background: transparent; }
+.calendar-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+
+/* A5 vertical image — fills available width, height auto → natural scroll */
+.calendar-events-img {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  border-radius: 10px;
+  object-fit: contain;
+  user-select: none;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.40),
+    0 0 0 1px rgba(255, 255, 255, 0.07);
+}
+
+/* ─── Calendar · Tablet ─────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .window--calendar {
+    width: clamp(460px, 90vw, 860px);
+  }
+
+  .calendar-body {
+    padding: 18px 20px 22px;
+  }
+
+  .calendar-events-img {
+    max-width: 100%;
+  }
+}
+
+/* ─── Calendar · Mobile ─────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .calendar-body {
+    padding: 16px 14px 20px;
+    align-items: flex-start;
+  }
+
+  .calendar-events-img {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+}
+
+/* ─── Find Me Window ────────────────────────────────────────────────────── */
+.window--findme {
+  width: clamp(520px, 900px, calc(100vw - 64px));
+  max-width: calc(100vw - 64px);
+}
+
+.findme-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 22px 28px 28px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+
+.findme-body::-webkit-scrollbar       { width: 4px; }
+.findme-body::-webkit-scrollbar-track { background: transparent; }
+.findme-body::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+
+/* Section label */
+.findme-section-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.36);
+  margin-bottom: 12px;
+  padding: 0 2px;
+}
+
+/* 3-column grid */
+.findme-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* Vertical card item */
+.findme-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 18px 10px 14px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 160ms ease;
+}
+
+.findme-item:hover {
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* Square icon — 80px */
+.findme-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.36),
+    0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+/* Service name */
+.findme-name {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.80);
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Link button / anchor */
+.findme-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 18px 5px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: rgba(255, 255, 255, 0.80);
+  font-size: 11.5px;
+  font-weight: 600;
+  font-family: inherit;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  transition: background 140ms ease, border-color 140ms ease, transform 100ms ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.findme-link:hover {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.34);
+}
+
+.findme-link:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.50);
+  outline-offset: 2px;
+}
+
+.findme-link:active {
+  background: rgba(255, 255, 255, 0.07);
+  transform: scale(0.97);
+}
+
+/* Disabled — visible but inert */
+.findme-link--disabled {
+  opacity: 0.34;
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Single divider between Social and Ecosistema */
+.findme-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 18px 0 16px;
+}
+
+/* ─── Find Me · Tablet ──────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .window--findme {
+    width: clamp(460px, 90vw, 860px);
+  }
+
+  .findme-body {
+    padding: 18px 22px 22px;
+  }
+
+  .findme-icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 17px;
+  }
+}
+
+/* ─── Find Me · Mobile ──────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .findme-body {
+    padding: 14px 14px 18px;
+  }
+
+  .findme-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .findme-item {
+    padding: 14px 8px 12px;
+    border-radius: 13px;
+  }
+
+  .findme-icon {
+    width: 54px;
+    height: 54px;
+    border-radius: 13px;
+  }
+
+  .findme-name {
+    font-size: 11.5px;
+  }
+
+  .findme-link {
+    padding: 3px 12px 4px;
+    font-size: 11px;
+  }
+}
+
+/* ─── Desktop Widget ────────────────────────────────────────────────────────── */
+.desktop-widget {
+  position: fixed;
+  top: clamp(20px, 3vh, 32px);
+  right: clamp(16px, 2vw, 28px);
+  z-index: 10;
+
+  width: 360px;
+  height: 180px;
+  border-radius: 22px;
+  overflow: hidden;
+
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 12px 48px rgba(0, 0, 0, 0.32),
+    0 3px 10px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 var(--glass-highlight);
+
+  pointer-events: none;
+  user-select: none;
+}
+
+.desktop-widget-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.widget-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  opacity: 0;
+  transition: opacity 700ms ease;
+  pointer-events: none;
+  draggable: false;
+}
+
+.widget-img--active {
+  opacity: 1;
+}
+
+/* ─── Desktop Widget · Tablet ───────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .desktop-widget {
+    width: 300px;
+    height: 150px;
+    border-radius: 18px;
+    top: clamp(16px, 2.5vh, 26px);
+    right: clamp(12px, 1.5vw, 20px);
+  }
+}
+
+/* ─── Desktop Widget · Mobile ───────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .desktop-widget {
+    display: none;
+  }
+}
+
+/* ─── Desktop Files ──────────────────────────────────────────────────────────── */
+.desktop-files {
+  position: fixed;
+  top: clamp(20px, 3vh, 32px);
+  left: clamp(16px, 2vw, 28px);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.desktop-file {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  width: 64px;
+  padding: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  pointer-events: all;
+  border-radius: 10px;
+  transition: opacity 150ms ease, transform 160ms var(--ease-spring);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.desktop-file:hover {
+  transform: scale(1.05);
+}
+
+.desktop-file:active {
+  transform: scale(0.96);
+  opacity: 0.76;
+  transition-duration: 80ms;
+}
+
+.desktop-file:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.65);
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+.desktop-file-icon {
+  width: 100%;
+  height: auto;
+  display: block;
+  user-select: none;
+  pointer-events: none;
+  draggable: false;
+}
+
+.desktop-file-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  text-align: center;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.65),
+    0 0 10px rgba(0, 0, 0, 0.45);
+  line-height: 1.30;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ─── Desktop Files · Tablet ──────────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .desktop-file {
+    width: 56px;
+  }
+
+  .desktop-file-label {
+    font-size: 10px;
+  }
+}
+
+/* ─── Desktop Files · Mobile ──────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .desktop-files {
+    top: clamp(12px, 2vh, 20px);
+    left: clamp(10px, 2vw, 16px);
+    gap: 10px;
+  }
+
+  .desktop-file {
+    width: 52px;
+    padding: 5px;
+  }
+
+  .desktop-file-label {
+    font-size: 9.5px;
+  }
+}
