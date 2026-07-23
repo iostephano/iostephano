@@ -457,8 +457,8 @@ const BOOKS_DATA = [
     underConstruction: true
   },
   {
-    title: 'Software Architecture & Design Patterns',
-    description: 'Software Architecture & Design Patterns es una guía práctica para dominar la arquitectura de software y los patrones de diseño necesarios para construir aplicaciones iOS modernas, escalables y mantenibles. El libro aborda Clean Architecture, MVVM, principios SOLID, separación de responsabilidades, organización modular y patrones de diseño aplicados a proyectos reales.',
+    title: 'Architecture and Design Patterns',
+    description: 'Architecture and Design Patterns es una guía práctica para dominar la arquitectura de software y los patrones de diseño necesarios para construir aplicaciones iOS modernas, escalables y mantenibles. El libro aborda Clean Architecture, MVVM, principios SOLID, separación de responsabilidades, organización modular y patrones de diseño aplicados a proyectos reales.',
     price: 'S/ 100',
     imagePath: 'assets/books/book-software-architecture-design-patterns.png',
     underConstruction: true
