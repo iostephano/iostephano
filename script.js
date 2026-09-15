@@ -515,9 +515,6 @@ function buildBooksHTML(app) {
               '<span class="books-price-value" data-book-price>' + book.price + '</span>' +
             '</div>' +
             '<p class="books-description" data-book-description>' + book.description + '</p>' +
-            '<p data-book-status style="margin:0 0 16px;font-size:13px;font-weight:600;color:#f5a623;letter-spacing:0.02em;' +
-              (book.underConstruction ? '' : 'display:none;') +
-              '">En construcción</p>' +
             '<div class="books-actions">' +
               '<a class="' + bookPurchaseClass(book) + '" data-book-link' +
                 (book.underConstruction
@@ -567,12 +564,6 @@ function renderBookIntoWindow(win, index) {
     linkEl.removeAttribute('tabindex');
   }
   win.querySelector('[data-book-counter]').textContent = (index + 1) + ' / ' + BOOKS_DATA.length;
-
-  var status = win.querySelector('[data-book-status]');
-  if (status) {
-    status.textContent = book.underConstruction ? 'En construcción' : '';
-    status.style.display = book.underConstruction ? '' : 'none';
-  }
 }
 
 const BOOKS_AUTOPLAY_INTERVAL_MS = 10000;
