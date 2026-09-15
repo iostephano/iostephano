@@ -408,21 +408,24 @@ const BOOKS_DATA = [
     description: 'WWDC 26 es una publicación práctica pensada para reunir y explicar las principales novedades presentadas por Apple. El contenido está organizado por tecnologías y áreas del ecosistema, mostrando qué hay de nuevo, qué cambió y cómo entender cada tema de forma clara. Incluye explicaciones estructuradas, contexto técnico y ejemplos de código para facilitar el estudio y la aplicación de estas novedades en proyectos reales.',
     price: 'S/ 50',
     imagePath: 'assets/books/book-wwdc26.png',
-    underConstruction: false
+    underConstruction: false,
+    gumroadUrl: 'https://swiftlatam.gumroad.com/l/wwdc26'
   },
   {
     title: 'Swift',
     description: 'Swift es una guía práctica para aprender el lenguaje desde sus fundamentos hasta su uso profesional, con explicaciones claras, ejemplos aplicados y una progresión pensada para el desarrollo moderno de software en el ecosistema Apple.',
     price: 'S/ 100',
     imagePath: 'assets/books/book-swift.png',
-    underConstruction: false
+    underConstruction: false,
+    gumroadUrl: 'https://swiftlatam.gumroad.com/l/swift'
   },
   {
     title: 'Foundation',
     description: 'Foundation es una guía práctica para comprender las APIs fundamentales que sostienen gran parte del desarrollo con Swift. A través de explicaciones claras y ejemplos aplicados, este libro aborda estructuras, fechas, colecciones, archivos, concurrencia, internacionalización y herramientas clave para construir software moderno, robusto y mantenible.',
     price: 'S/ 100',
     imagePath: 'assets/books/book-foundation.png',
-    underConstruction: false
+    underConstruction: false,
+    gumroadUrl: 'https://swiftlatam.gumroad.com/l/foundation'
   },
   {
     title: 'SwiftUI',
@@ -471,6 +474,15 @@ const BOOKS_DATA = [
   return book;
 });
 
+// Purchase button: books with a gumroadUrl sell through Gumroad;
+// the rest keep using the WhatsApp link built above.
+function bookPurchaseHref(book) {
+  return book.gumroadUrl || book.whatsappLink;
+}
+function bookPurchaseLabel(book) {
+  return book.gumroadUrl ? 'Comprar en Gumroad' : 'Comprar por WhatsApp';
+}
+
 function buildBooksHTML(app) {
   var book = BOOKS_DATA[0];
   return (
@@ -502,8 +514,8 @@ function buildBooksHTML(app) {
               '">En construcción</p>' +
             '<div class="books-actions">' +
               '<a class="books-link-btn" data-book-link' +
-                ' href="' + book.whatsappLink + '"' +
-                ' target="_blank" rel="noopener noreferrer">Comprar por WhatsApp</a>' +
+                ' href="' + bookPurchaseHref(book) + '"' +
+                ' target="_blank" rel="noopener noreferrer">' + bookPurchaseLabel(book) + '</a>' +
             '</div>' +
           '</div>' +
         '</div>' +
@@ -534,7 +546,9 @@ function renderBookIntoWindow(win, index) {
   win.querySelector('[data-book-title]').textContent = book.title;
   win.querySelector('[data-book-price]').textContent = book.price;
   win.querySelector('[data-book-description]').textContent = book.description;
-  win.querySelector('[data-book-link]').href = book.whatsappLink;
+  var linkEl = win.querySelector('[data-book-link]');
+  linkEl.href = bookPurchaseHref(book);
+  linkEl.textContent = bookPurchaseLabel(book);
   win.querySelector('[data-book-counter]').textContent = (index + 1) + ' / ' + BOOKS_DATA.length;
 
   var status = win.querySelector('[data-book-status]');
