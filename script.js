@@ -85,21 +85,6 @@ const ICON_SVGS = {
     <line x1="14" y1="64" x2="106" y2="64" stroke="rgba(0,0,0,0.06)" stroke-width="1"/>
   </svg>`),
 
-  mail: toDataURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-    <defs>
-      <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#36BCFF"/>
-        <stop offset="100%" stop-color="#0078E0"/>
-      </linearGradient>
-    </defs>
-    <rect width="120" height="120" rx="26" fill="url(#g)"/>
-    <rect x="18" y="36" width="84" height="58" rx="8" fill="rgba(255,255,255,0.14)"
-      stroke="rgba(255,255,255,0.88)" stroke-width="2.5"/>
-    <polyline points="18,44 60,74 102,44"
-      stroke="rgba(255,255,255,0.92)" stroke-width="2.5" fill="none"
-      stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>`),
-
   findme: toDataURI(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
     <defs>
       <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
@@ -205,7 +190,10 @@ const APP_ICON_SVGS = {
 };
 
 function buildAppsHTML(app) {
-  function projectBlock(name, iconSrc, iconFallback, desc, appId) {
+  function projectBlock(name, iconSrc, iconFallback, desc, appId, externalUrl) {
+    var linkHTML = externalUrl
+      ? '<a class="app-project-link" href="' + externalUrl + '" target="_blank" rel="noopener noreferrer">Link</a>'
+      : '<button class="app-project-link" type="button" data-app-id="' + appId + '">Link</button>';
     return (
       '<div class="app-project">' +
         '<img class="app-project-icon" src="' + iconSrc + '" alt="' + name + '"' +
@@ -213,7 +201,7 @@ function buildAppsHTML(app) {
         '<div class="app-project-info">' +
           '<h3 class="app-project-name">' + name + '</h3>' +
           '<p class="app-project-desc">' + desc + '</p>' +
-          '<button class="app-project-link" type="button" data-app-id="' + appId + '">Link</button>' +
+          linkHTML +
         '</div>' +
       '</div>'
     );
@@ -234,7 +222,8 @@ function buildAppsHTML(app) {
         'assets/apps/swiftlatam-icon.png',
         APP_ICON_SVGS.swiftlatam,
         'SwiftLATAM reúne a Apple Developers de Latinoamérica para aprender, compartir y crecer en comunidad.',
-        'swiftlatam'
+        null,
+        'https://www.linkedin.com/groups/14719201/'
       ) +
       '<div class="app-project-divider" aria-hidden="true"></div>' +
       projectBlock(
@@ -669,7 +658,7 @@ const FINDME_DATA = [
   {
     sectionTitle: 'Ecosistema',
     items: [
-      { name: 'SwiftLATAM', iconPath: 'assets/social/swiftlatam-icon.png', fallback: socialFallback('SL', '#F05138'), url: null, appId: 'swiftlatam' },
+      { name: 'SwiftLATAM', iconPath: 'assets/social/swiftlatam-icon.png', fallback: socialFallback('SL', '#F05138'), url: 'https://www.linkedin.com/groups/14719201/' },
       { name: '8+CORE',     iconPath: 'assets/social/8pluscore-icon.png',  fallback: socialFallback('8+', '#3D3A8A'), url: null, appId: '8pluscore' },
       { name: 'Book',       iconPath: 'assets/social/book-icon.png',       fallback: socialFallback('BK', '#C87800'), url: null, appId: 'books' },
       { name: 'GitHub',     iconPath: 'assets/social/github-icon.png',     fallback: socialFallback('GH', '#1B1F24'), url: 'https://github.com/iostephano' }
@@ -787,16 +776,6 @@ const APPS = [
     description: 'Un calendario simbólico para mostrar avances, hitos y próximos pasos del ecosistema iOS Stefano. La construcción tiene un rumbo.',
     badge: 'Fase 2',
     type: 'internal'
-  },
-  {
-    id: 'mail',
-    label: 'Mail',
-    iconPath: 'assets/icons/icon-mail.png',
-    title: 'Contact',
-    description: 'Canal de contacto para conversar sobre desarrollo iOS, proyectos, colaboración técnica o producto digital. La conversación es el primer paso.',
-    badge: 'Fase 1',
-    type: 'mailto',
-    href: 'mailto:iostephano@proton.me'
   },
   {
     id: 'findme',
