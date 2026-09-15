@@ -406,7 +406,7 @@ const BOOKS_DATA = [
   {
     title: 'WWDC 26',
     description: 'WWDC 26 es una publicación práctica pensada para reunir y explicar las principales novedades presentadas por Apple. El contenido está organizado por tecnologías y áreas del ecosistema, mostrando qué hay de nuevo, qué cambió y cómo entender cada tema de forma clara. Incluye explicaciones estructuradas, contexto técnico y ejemplos de código para facilitar el estudio y la aplicación de estas novedades en proyectos reales.',
-    price: 'S/ 50',
+    price: '$15',
     imagePath: 'assets/books/book-wwdc26.png',
     underConstruction: false,
     gumroadUrl: 'https://swiftlatam.gumroad.com/l/wwdc26'
@@ -414,7 +414,7 @@ const BOOKS_DATA = [
   {
     title: 'Swift',
     description: 'Swift es una guía práctica para aprender el lenguaje desde sus fundamentos hasta su uso profesional, con explicaciones claras, ejemplos aplicados y una progresión pensada para el desarrollo moderno de software en el ecosistema Apple.',
-    price: 'S/ 100',
+    price: '$25',
     imagePath: 'assets/books/book-swift.png',
     underConstruction: false,
     gumroadUrl: 'https://swiftlatam.gumroad.com/l/swift'
@@ -422,7 +422,7 @@ const BOOKS_DATA = [
   {
     title: 'Foundation',
     description: 'Foundation es una guía práctica para comprender las APIs fundamentales que sostienen gran parte del desarrollo con Swift. A través de explicaciones claras y ejemplos aplicados, este libro aborda estructuras, fechas, colecciones, archivos, concurrencia, internacionalización y herramientas clave para construir software moderno, robusto y mantenible.',
-    price: 'S/ 100',
+    price: '$25',
     imagePath: 'assets/books/book-foundation.png',
     underConstruction: false,
     gumroadUrl: 'https://swiftlatam.gumroad.com/l/foundation'
@@ -430,42 +430,42 @@ const BOOKS_DATA = [
   {
     title: 'SwiftUI',
     description: 'SwiftUI es una guía práctica para aprender a construir interfaces modernas en el ecosistema Apple, desde los conceptos esenciales hasta patrones avanzados de composición, estado, navegación, animaciones, arquitectura e integración con APIs actuales. El libro acompaña una progresión clara para crear experiencias visuales flexibles, mantenibles y preparadas para aplicaciones reales.',
-    price: 'S/ 200',
+    price: '$50',
     imagePath: 'assets/books/book-swiftui.png',
     underConstruction: true
   },
   {
     title: 'UIKit',
     description: 'UIKit es una guía práctica para comprender uno de los frameworks más importantes en la historia del desarrollo iOS. El libro aborda sus componentes, ciclos de vida, navegación, vistas, controladores, patrones de interfaz y su integración con SwiftUI, permitiendo mantener proyectos existentes y combinar lo mejor de ambos mundos en aplicaciones modernas.',
-    price: 'S/ 200',
+    price: '$50',
     imagePath: 'assets/books/book-uikit.png',
     underConstruction: true
   },
   {
     title: 'SwiftData',
     description: 'SwiftData es una guía práctica para aprender el framework moderno de persistencia de Apple, desde sus conceptos iniciales hasta su aplicación en proyectos reales. El libro explica modelos, relaciones, consultas, contexto, almacenamiento y estrategias de migración desde Core Data, con ejemplos claros orientados al desarrollo actual con Swift y SwiftUI.',
-    price: 'S/ 100',
+    price: '$25',
     imagePath: 'assets/books/book-swiftdata.png',
     underConstruction: true
   },
   {
     title: 'Swift Testing',
     description: 'Swift Testing es una guía práctica para aprender el nuevo enfoque de pruebas en Swift, desde la escritura de tests simples hasta la validación de comportamientos más complejos. El libro también explica cómo adaptar proyectos existentes basados en XCTest, facilitando una transición progresiva hacia una forma más moderna, expresiva y clara de probar software.',
-    price: 'S/ 100',
+    price: '$25',
     imagePath: 'assets/books/book-swift-testing.png',
     underConstruction: true
   },
   {
     title: 'Architecture and Design Patterns',
     description: 'Architecture and Design Patterns es una guía práctica para dominar la arquitectura de software y los patrones de diseño necesarios para construir aplicaciones iOS modernas, escalables y mantenibles. El libro aborda Clean Architecture, MVVM, principios SOLID, separación de responsabilidades, organización modular y patrones de diseño aplicados a proyectos reales.',
-    price: 'S/ 100',
+    price: '$25',
     imagePath: 'assets/books/book-software-architecture-design-patterns.png',
     underConstruction: true
   },
   {
     title: 'Technology Collection',
     description: 'Technology Collection profundiza en cuatro tecnologías esenciales del ecosistema Apple: Swift Package Manager, Combine, XCTest y Core Data. El libro explica sus fundamentos, casos de uso, integración y aplicación en proyectos profesionales, ofreciendo una visión práctica para mantener, evolucionar y modernizar aplicaciones existentes.',
-    price: 'S/ 100',
+    price: '$25',
     imagePath: 'assets/books/book-technology-collection.png',
     underConstruction: true
   }
@@ -474,13 +474,19 @@ const BOOKS_DATA = [
   return book;
 });
 
-// Purchase button: books with a gumroadUrl sell through Gumroad;
-// the rest keep using the WhatsApp link built above.
+// Purchase button: books under construction show a disabled placeholder;
+// otherwise books with a gumroadUrl sell through Gumroad, the rest keep
+// using the WhatsApp link built above.
 function bookPurchaseHref(book) {
+  if (book.underConstruction) return '';
   return book.gumroadUrl || book.whatsappLink;
 }
 function bookPurchaseLabel(book) {
+  if (book.underConstruction) return 'En construcción';
   return book.gumroadUrl ? 'Comprar en Gumroad' : 'Comprar por WhatsApp';
+}
+function bookPurchaseClass(book) {
+  return 'books-link-btn' + (book.underConstruction ? ' books-link-btn--disabled' : '');
 }
 
 function buildBooksHTML(app) {
@@ -513,8 +519,10 @@ function buildBooksHTML(app) {
               (book.underConstruction ? '' : 'display:none;') +
               '">En construcción</p>' +
             '<div class="books-actions">' +
-              '<a class="books-link-btn" data-book-link' +
-                ' href="' + bookPurchaseHref(book) + '"' +
+              '<a class="' + bookPurchaseClass(book) + '" data-book-link' +
+                (book.underConstruction
+                  ? ' aria-disabled="true" tabindex="-1"'
+                  : ' href="' + bookPurchaseHref(book) + '"') +
                 ' target="_blank" rel="noopener noreferrer">' + bookPurchaseLabel(book) + '</a>' +
             '</div>' +
           '</div>' +
@@ -547,8 +555,17 @@ function renderBookIntoWindow(win, index) {
   win.querySelector('[data-book-price]').textContent = book.price;
   win.querySelector('[data-book-description]').textContent = book.description;
   var linkEl = win.querySelector('[data-book-link]');
-  linkEl.href = bookPurchaseHref(book);
+  linkEl.className = bookPurchaseClass(book);
   linkEl.textContent = bookPurchaseLabel(book);
+  if (book.underConstruction) {
+    linkEl.removeAttribute('href');
+    linkEl.setAttribute('aria-disabled', 'true');
+    linkEl.tabIndex = -1;
+  } else {
+    linkEl.href = bookPurchaseHref(book);
+    linkEl.removeAttribute('aria-disabled');
+    linkEl.removeAttribute('tabindex');
+  }
   win.querySelector('[data-book-counter]').textContent = (index + 1) + ' / ' + BOOKS_DATA.length;
 
   var status = win.querySelector('[data-book-status]');

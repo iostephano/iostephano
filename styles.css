@@ -1069,6 +1069,11 @@ button.window-dot:focus-visible {
   transform: scale(0.97);
 }
 
+.books-link-btn--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 /* Carousel navigation: prev · counter · next */
 .books-nav {
   display: flex;
