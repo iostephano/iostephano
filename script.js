@@ -314,36 +314,6 @@ function build8PlusCoreHTML(app) {
 }
 
 // ── Safari Window ───────────────────────────────────────────────────────────
-const YOUTUBE_PREVIEW_PLACEHOLDER = toDataURI(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480">' +
-  '<rect width="900" height="480" fill="#0F0F0F"/>' +
-  '<rect width="900" height="4" fill="#FF0000"/>' +
-  '<rect x="0" y="4" width="900" height="136" fill="#181818"/>' +
-  '<circle cx="80" cy="200" r="44" fill="#212121"/>' +
-  '<text x="80" y="212" text-anchor="middle" fill="rgba(255,0,0,0.85)" font-size="30"' +
-  ' font-family="sans-serif">▶</text>' +
-  '<text x="144" y="192" fill="white" font-size="22" font-weight="700"' +
-  ' font-family="-apple-system,BlinkMacSystemFont,sans-serif">iOStephano</text>' +
-  '<text x="144" y="216" fill="rgba(255,255,255,0.50)" font-size="13"' +
-  ' font-family="-apple-system,BlinkMacSystemFont,sans-serif">@iOStephano · Swift · iOS · Apple Ecosystem</text>' +
-  '<rect x="680" y="182" width="138" height="38" rx="19" fill="#FF0000"/>' +
-  '<text x="749" y="206" text-anchor="middle" fill="white" font-size="13" font-weight="600"' +
-  ' font-family="-apple-system,BlinkMacSystemFont,sans-serif">Suscribirse</text>' +
-  '<line x1="0" y1="252" x2="900" y2="252" stroke="rgba(255,255,255,0.07)" stroke-width="1"/>' +
-  '<rect x="20" y="268" width="256" height="144" rx="8" fill="#181818"/>' +
-  '<rect x="296" y="268" width="256" height="144" rx="8" fill="#181818"/>' +
-  '<rect x="572" y="268" width="256" height="144" rx="8" fill="#181818"/>' +
-  '<text x="148" y="350" text-anchor="middle" fill="rgba(255,255,255,0.10)" font-size="40"' +
-  ' font-family="sans-serif">▶</text>' +
-  '<text x="424" y="350" text-anchor="middle" fill="rgba(255,255,255,0.10)" font-size="40"' +
-  ' font-family="sans-serif">▶</text>' +
-  '<text x="700" y="350" text-anchor="middle" fill="rgba(255,255,255,0.10)" font-size="40"' +
-  ' font-family="sans-serif">▶</text>' +
-  '<text x="450" y="452" text-anchor="middle" fill="rgba(255,255,255,0.22)" font-size="12"' +
-  ' font-family="-apple-system,BlinkMacSystemFont,sans-serif">Haz clic para abrir el canal en YouTube →</text>' +
-  '</svg>'
-);
-
 function buildSafariHTML(app) {
   return (
     '<div class="window-titlebar">' +
@@ -356,21 +326,17 @@ function buildSafariHTML(app) {
     '</div>' +
     '<div class="safari-urlbar">' +
       '<div class="safari-url-capsule">' +
-        '<span class="safari-url-text">youtube.com/@iOStephano</span>' +
+        '<span class="safari-url-text">8pluscore.com</span>' +
       '</div>' +
     '</div>' +
     '<div class="safari-body">' +
-      '<a class="safari-preview-link"' +
-        ' href="https://www.youtube.com/@iOStephano"' +
-        ' target="_blank"' +
-        ' rel="noopener noreferrer"' +
-        ' aria-label="Abrir canal de iOStephano en YouTube (nueva pestaña)">' +
+      '<button class="safari-preview-link" type="button" data-app-id="8pluscore" aria-label="Abrir 8+Core">' +
         '<img class="safari-preview-img"' +
-          ' src="assets/previews/youtube-channel-preview.png"' +
-          ' alt="Vista previa del canal de YouTube de iOStephano"' +
+          ' src="assets/previews/8pluscore-preview.png"' +
+          ' alt="Vista previa de 8+Core"' +
           ' draggable="false"' +
-          ' onerror="this.src=\'' + YOUTUBE_PREVIEW_PLACEHOLDER + '\';this.onerror=null;">' +
-      '</a>' +
+          ' onerror="this.src=\'' + EIGHTCORE_PREVIEW_PLACEHOLDER + '\';this.onerror=null;">' +
+      '</button>' +
     '</div>'
   );
 }
@@ -933,7 +899,7 @@ function openWindow(app) {
   });
 
   if (app.id === 'books') initBooksCarousel(win);
-  if (app.id === 'apps' || app.id === 'findme') initInternalAppLinks(win);
+  if (app.id === 'apps' || app.id === 'findme' || app.id === 'safari') initInternalAppLinks(win);
 
   layer.appendChild(win);
 
@@ -1011,26 +977,7 @@ const FILE_ICON_SVGS = {
 
 // Configura los archivos del escritorio aquí.
 // Para agregar un archivo: añadir una entrada al array con su id, label, iconPath y textos.
-const DESKTOP_FILES = [
-  {
-    id: 'swiftlatam',
-    label: 'SwiftLATAM.swift',
-    iconPath: 'assets/desktop-files/swiftlatam-file.png',
-    title: 'SwiftLATAM',
-    description: 'Comunidad de desarrolladores Apple en Latinoamérica.',
-    badge: 'Coming Soon',
-    type: 'internal'
-  },
-  {
-    id: '8pluscore',
-    label: '8+Core.lab',
-    iconPath: 'assets/desktop-files/8pluscore-file.png',
-    title: '8+ Core',
-    description: 'Laboratorio de software para el ecosistema Apple.',
-    badge: 'Coming Soon',
-    type: 'internal'
-  }
-];
+const DESKTOP_FILES = [];
 
 function renderDesktopFiles() {
   const container = document.getElementById('desktopFiles');
