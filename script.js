@@ -1011,43 +1011,8 @@ function renderDesktopFiles() {
   });
 }
 
-// ── Widget ──────────────────────────────────────────────────────────────────
-// Configura las imágenes del carrusel aquí.
-// Para agregar imágenes: añadir rutas a este array en orden de aparición.
-// Tamaño recomendado: 720×360 px (horizontal, proporción 2:1).
-const WIDGET_IMAGES = [
-  'assets/widgets/widget-01.webp',
-  'assets/widgets/widget-02.webp',
-  'assets/widgets/widget-03.webp'
-];
-
-function initWidget() {
-  const track = document.getElementById('widgetTrack');
-  if (!track || !WIDGET_IMAGES.length) return;
-
-  WIDGET_IMAGES.forEach((src, i) => {
-    const img = document.createElement('img');
-    img.className = 'widget-img' + (i === 0 ? ' widget-img--active' : '');
-    img.src = src;
-    img.alt = '';
-    img.draggable = false;
-    track.appendChild(img);
-  });
-
-  if (WIDGET_IMAGES.length <= 1) return;
-
-  let current = 0;
-  setInterval(() => {
-    const imgs = track.querySelectorAll('.widget-img');
-    imgs[current].classList.remove('widget-img--active');
-    current = (current + 1) % imgs.length;
-    imgs[current].classList.add('widget-img--active');
-  }, 4000);
-}
-
 // ── Init ────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   renderDock();
-  initWidget();
   renderDesktopFiles();
 });
