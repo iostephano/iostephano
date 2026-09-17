@@ -231,7 +231,7 @@ function buildAppsHTML(app) {
         'assets/apps/8pluscore-icon.png',
         APP_ICON_SVGS.eightcore,
         '8+CORE es un laboratorio de software que diseña y desarrolla apps, sistemas y productos digitales para el ecosistema Apple.',
-        '8pluscore'
+        'safari'
       ) +
     '</div>'
   );
@@ -330,7 +330,7 @@ function buildSafariHTML(app) {
       '</div>' +
     '</div>' +
     '<div class="safari-body">' +
-      '<button class="safari-preview-link" type="button" data-app-id="8pluscore" aria-label="Abrir 8+Core">' +
+      '<button class="safari-preview-link" type="button" data-app-id="safari" aria-label="Abrir 8+Core">' +
         '<img class="safari-preview-img"' +
           ' src="assets/previews/8pluscore-preview.png"' +
           ' alt="Vista previa de 8+Core"' +
@@ -647,7 +647,7 @@ const FINDME_DATA = [
     sectionTitle: 'Ecosistema',
     items: [
       { name: 'SwiftLATAM', iconPath: 'assets/social/swiftlatam-icon.png', fallback: socialFallback('SL', '#F05138'), url: 'https://www.linkedin.com/groups/14719201/' },
-      { name: '8+CORE',     iconPath: 'assets/social/8pluscore-icon.png',  fallback: socialFallback('8+', '#3D3A8A'), url: null, appId: '8pluscore' },
+      { name: '8+CORE',     iconPath: 'assets/social/8pluscore-icon.png',  fallback: socialFallback('8+', '#3D3A8A'), url: null, appId: 'safari' },
       { name: 'Book',       iconPath: 'assets/social/book-icon.png',       fallback: socialFallback('BK', '#C87800'), url: null, appId: 'books' },
       { name: 'GitHub',     iconPath: 'assets/social/github-icon.png',     fallback: socialFallback('GH', '#1B1F24'), url: 'https://github.com/iostephano' }
     ]
